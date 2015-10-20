@@ -30,6 +30,9 @@ var/
 *.manifest
 *.spec
 
+# PySent
+conf.py
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
