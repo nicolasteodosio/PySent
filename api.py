@@ -21,10 +21,6 @@ def get_tweets_timeline():
 
     print "##################################################"
 
-    test = api.trends_available()
-
-    print test[0]
-
 
 def get_tweets_in_search():
     api = api_access()
