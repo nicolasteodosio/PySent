@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+from pymongo import MongoClient
 import tweepy
-from unidecode import unidecode
 from conf import consumer_key, consumer_secret, access_token, access_secret
 
 
@@ -11,28 +11,31 @@ def get_api_access():
     return api
 
 
-def get_tweets_timeline():
-    api = get_api_access()
-
-    public_tweets = api.home_timeline()
-
-    for tweet in public_tweets:
-        print "Tweet from : %s \n  tweet: %s" % (tweet.user.screen_name, tweet.text)
-
-    print "##################################################"
+def get_db_connection():
+    client = MongoClient()
+    return client
 
 
 def search(q):
     api = get_api_access()
-    tweets = api.search(q=q, lang='pt', result_type='recent', count=100)
-
-    for tweet in tweets:
-        print "Tweet: {}".format(unidecode(tweet.text))
-        print "##################################################"
+    return api.search(q=q, lang='pt', result_type='recent', count=100)
 
 
 def main():
-    search('#primeiroassedio')
+    q = '#primeiroassedio'
+    tweets = search(q)
+
+    if tweets:
+        tweets_json = []
+        for tweet in tweets:
+            tweets_json.append(tweet._json)
+
+        client = get_db_connection()
+        db = client['tweets']
+        collection = db[q]
+
+        result = collection.insert_many(tweets_json)
+        print '{0} registros salvos!'.format(len(result.inserted_ids))
 
 
 if __name__ == "__main__":
