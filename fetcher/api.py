@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pymongo import MongoClient
 import tweepy
-from conf import consumer_key, consumer_secret, access_token, access_secret
+from conf import consumer_key, consumer_secret, access_token, access_secret, SEARCH_QUERY
 
 
 def get_api_access():
@@ -22,7 +22,8 @@ def search(q):
 
 
 def main():
-    q = '#primeiroassedio'
+
+    q = SEARCH_QUERY
     tweets = search(q)
 
     if tweets:
