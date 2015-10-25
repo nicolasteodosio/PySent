@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from pymongo import MongoClient
 import tweepy
-from conf import consumer_key, consumer_secret, access_token, access_secret, SEARCH_QUERY
+from conf import consumer_key, consumer_secret, access_token, access_secret
+from fetcher.helper import SEARCH_QUERY
 
 
 def get_api_access():
