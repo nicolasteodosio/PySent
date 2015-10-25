@@ -31,7 +31,7 @@ var/
 *.spec
 
 # PySent
-conf.py
+fetcher/conf.py
 
 # Installer logs
 pip-log.txt
