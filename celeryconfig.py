@@ -16,6 +16,6 @@ CELERYBEAT_SCHEDULE = {
     'every-minute': {
         'task': 'fetcher.api.search',
         'schedule': crontab(),
-        'args': ['#Esquenta'],
+        'args': ['#pysentnicolas'],
     },
 }
