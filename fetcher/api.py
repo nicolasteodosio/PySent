@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+import celery
 from pymongo import MongoClient
 import tweepy
 from conf import consumer_key, consumer_secret, access_token, access_secret
-from fetcher.helper import SEARCH_QUERY
 
 
 def get_api_access():
@@ -17,15 +17,10 @@ def get_db_connection():
     return client
 
 
+@celery.task
 def search(q):
     api = get_api_access()
-    return api.search(q=q, lang='pt', result_type='recent', count=100)
-
-
-def main():
-
-    q = SEARCH_QUERY
-    tweets = search(q)
+    tweets = api.search(q=q, lang='pt', result_type='recent', count=100)
 
     if tweets:
         tweets_json = []
@@ -39,8 +34,6 @@ def main():
         result = collection.insert_many(tweets_json)
         print '{0} registros salvos!'.format(len(result.inserted_ids))
 
-
-if __name__ == "__main__":
-    main()
+    return
 
 
