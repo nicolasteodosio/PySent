@@ -6,10 +6,11 @@ sudo apt-get update &&
 sudo apt-get install -y mongodb-org
 
 # Redis Install
-wget http://download.redis.io/releases/redis-3.0.6.tar.gz
-tar xzf redis-3.0.6.tar.gz
-cd redis-3.0.6
-make
-sudo make install
-cd utils
+cd ~ &&
+wget http://download.redis.io/releases/redis-3.0.6.tar.gz &&
+tar xzf redis-3.0.6.tar.gz &&
+cd redis-3.0.6 &&
+make &&
+sudo make install &&
+cd utils &&
 sudo ./install_server.sh
