@@ -7,6 +7,8 @@ from nltk.corpus import stopwords
 from pymongo import MongoClient
 from os.path import join as pjoin
 
+from unidecode import unidecode
+
 
 def get_db_connection():
     client = MongoClient()
@@ -40,14 +42,16 @@ class SentimentAnalyzer(object):
         """
 
         try:
-            positive_file = pjoin(sys.path[0], "word_database", "positive.csv")
-            negative_file = pjoin(sys.path[0], "word_database", "negative.csv")
+            positive_file = pjoin("word_database", "positive.csv")
+            negative_file = pjoin("word_database", "negative.csv")
 
-            positives = list(csv.reader(positive_file, delimiter=','))
-            negatives = list(csv.reader(negative_file, delimiter=','))
+            with open(positive_file, 'r') as pos, open(negative_file, 'r') as neg:
 
-            posfeats = [(dict({word.lower(): True}), 'pos') for word in positives if self._is_valid_word(word)]
-            negfeats = [(dict({word.lower(): True}), 'neg') for word in negatives if self._is_valid_word(word)]
+                positives = list(csv.reader(pos, delimiter=','))
+                negatives = list(csv.reader(neg, delimiter=','))
+
+                posfeats = [(dict({unidecode(word[0].lower()): True}), 'pos') for word in positives]
+                negfeats = [(dict({unidecode(word[0].lower()): True}), 'neg') for word in negatives]
 
             self.classifier = NaiveBayesClassifier.train(posfeats + negfeats)
 
@@ -56,11 +60,11 @@ class SentimentAnalyzer(object):
 
     def _is_valid_word(self, word):
         """
-		__check_word( self, word ):
-		Input: word. The word to check.
-		Looks at a word and determines whether that should be used in the classifier.
-		Return: True if the word should be used, False if not.
-		"""
+        __check_word( self, word ):
+        Input: word. The word to check.
+        Looks at a word and determines whether that should be used in the classifier.
+        Return: True if the word should be used, False if not.
+        """
         if word in self.stopSet \
                 or len(word) < self.min_word_length \
                 or word[0] == "@" \
