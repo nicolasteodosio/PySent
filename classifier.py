@@ -10,17 +10,7 @@ from os.path import join as pjoin
 from unidecode import unidecode
 
 
-def get_db_connection():
-    client = MongoClient()
-    return client
-
-
-def get_data():
-    with get_db_connection() as client:
-        tweets = client['tweets']['#Esquenta'].find({})
-
-
-class SentimentAnalyzer(object):
+class SentimentAnalyzer (object):
     def __init__(self):
         """
         Constructs a new SentimentAnalyzer instance.
@@ -28,7 +18,7 @@ class SentimentAnalyzer(object):
 
         self.min_word_length = 3
 
-        self.stopSet = set(stopwords.words('portuguese'))
+        self.stop_words = set(stopwords.words('portuguese'))
 
         # Naive Bayes initialization
         self._init_naive_bayes()
@@ -50,8 +40,8 @@ class SentimentAnalyzer(object):
                 positives = list(csv.reader(pos, delimiter=','))
                 negatives = list(csv.reader(neg, delimiter=','))
 
-                posfeats = [(dict({unidecode(word[0].lower()): True}), 'pos') for word in positives]
-                negfeats = [(dict({unidecode(word[0].lower()): True}), 'neg') for word in negatives]
+                posfeats = [(dict({unidecode(word[0].lower()): True}), 'pos') for word in positives if self._is_valid_word(word[0])]
+                negfeats = [(dict({unidecode(word[0].lower()): True}), 'neg') for word in negatives if self._is_valid_word(word[0])]
 
             self.classifier = NaiveBayesClassifier.train(posfeats + negfeats)
 
@@ -65,11 +55,7 @@ class SentimentAnalyzer(object):
         Looks at a word and determines whether that should be used in the classifier.
         Return: True if the word should be used, False if not.
         """
-        if word in self.stopSet \
-                or len(word) < self.min_word_length \
-                or word[0] == "@" \
-                or word[0] == "#" \
-                or word[:4] == "http":
+        if word in self.stop_words or len(word) < self.min_word_length or word.startswith("@") or word.startswith("#") or word.startswith("http"):
             return False
         else:
             return True
