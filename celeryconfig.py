@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from celery import Celery
-from celery.schedules import crontab
+from datetime import timedelta
 
 BROKER_URL = 'redis://localhost:6379/0'
 
@@ -13,9 +13,9 @@ CELERY_RESULT_BACKEND = 'redis'
 CELERY_IMPORTS = ("fetcher.api",)
 
 CELERYBEAT_SCHEDULE = {
-    'every-minute': {
+    'every-20-seconds': {
         'task': 'fetcher.api.search',
-        'schedule': crontab(),
-        'args': ['#pysentnicolas'],
+        'schedule': timedelta(seconds=20),
+        'args': ['#TheVoiceKidsBr'],
     },
 }
