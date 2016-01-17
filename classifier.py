@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-import sys
-import csv
-
 from nltk.classify import NaiveBayesClassifier
 from nltk.corpus import stopwords
 from pymongo import MongoClient
 from os.path import join as pjoin
-
+import unicodecsv as csv
 from unidecode import unidecode
 
 
@@ -17,7 +14,8 @@ def get_db_connection():
 
 def get_data():
     with get_db_connection() as client:
-        tweets = client['tweets']['#Esquenta'].find({})
+        tweets = client['tweets']['#TheVoiceKidsBr'].find({})
+        return tweets
 
 
 class SentimentAnalyzer(object):
@@ -47,14 +45,13 @@ class SentimentAnalyzer(object):
 
             with open(positive_file, 'r') as pos, open(negative_file, 'r') as neg:
 
-                positives = list(csv.reader(pos, delimiter=','))
-                negatives = list(csv.reader(neg, delimiter=','))
+                positives = list(csv.reader(pos, delimiter=',', encoding='utf-8',))
+                negatives = list(csv.reader(neg, delimiter=',', encoding='utf-8',))
 
                 posfeats = [(dict({unidecode(word[0].lower()): True}), 'pos') for word in positives]
                 negfeats = [(dict({unidecode(word[0].lower()): True}), 'neg') for word in negatives]
 
             self.classifier = NaiveBayesClassifier.train(posfeats + negfeats)
-
         except:
             raise Exception("Unknown error in SentimentAnalyzer::__init_naive_bayes")
 
