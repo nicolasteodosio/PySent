@@ -16,6 +16,6 @@ CELERYBEAT_SCHEDULE = {
     'every-20-seconds': {
         'task': 'fetcher.api.search',
         'schedule': timedelta(seconds=20),
-        'args': ['#TheVoiceKidsBr'],
+        'args': ['#superbowl'],
     },
 }
