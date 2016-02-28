@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import celery
-from pymongo import MongoClient
 import tweepy
-
+import connections
 from conf import consumer_key, consumer_secret, access_token, access_secret
 
 
@@ -11,11 +10,6 @@ def get_api_access():
     auth.set_access_token(access_token, access_secret)
     api = tweepy.API(auth)
     return api
-
-
-def get_db_connection():
-    client = MongoClient()
-    return client
 
 
 def get_tweets(q, latest=None):
@@ -30,7 +24,7 @@ def get_tweets(q, latest=None):
 
 
 def get_latest_tweet(q):
-    with get_db_connection() as client:
+    with connections.get_db_connection() as client:
         collection = client['tweets'][q]
         try:
             return collection.find({}).sort('id', -1)[0].get('id_str')
@@ -40,7 +34,7 @@ def get_latest_tweet(q):
 
 @celery.task
 def search(q):
-    with get_db_connection() as client:
+    with connections.get_db_connection() as client:
         latest = get_latest_tweet(q)
         tweets = get_tweets(q, latest)
 
