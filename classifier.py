@@ -21,12 +21,12 @@ class SentimentClassifier(object):
 
     def get_tweets_data(self, hashtag):
         with connections.get_db_connection() as client:
-            tweets = client['tweets'][hashtag].find({'lang': 'en', 'retweeted': False})
+            tweets = client['tweets'][hashtag].find({'retweeted': False})
             return tweets
 
     def classify(self):
-        for tweet in self.data[:12]:
-            blob = TextBlob(tweet['text'], analyzer=NaiveBayesAnalyzer())
+        for tweet in self.data[:100]:
+            blob = TextBlob(tweet['text'], analyzer=CustomNaiveBayesAnalyzer())
             print 'Tweet: {} || analisys: {}'.format(unidecode(tweet['text']), blob.sentiment)
 
 
@@ -35,20 +35,26 @@ class CustomNaiveBayesAnalyzer(NaiveBayesAnalyzer):
         """Default feature extractor for the NaiveBayesAnalyzer."""
         return dict(((word, True) for word in words))
 
-    def __init__(self, feature_extractor=_default_feature_extractor, corpus=None):
+    def __init__(self, feature_extractor=_default_feature_extractor, databases=['senti_lex', 'puc_portuguese', 're_li']):
         super(NaiveBayesAnalyzer, self).__init__()
         self._classifier = None
         self.feature_extractor = feature_extractor
+        self.databases = databases
 
     def train(self):
         """Train the Naive Bayes classifier on the movie review corpus."""
         super(NaiveBayesAnalyzer, self).train()
-        import ipdb; ipdb.set_trace()
-        neg_ids = nltk.corpus.movie_reviews.fileids('neg')
-        pos_ids = nltk.corpus.movie_reviews.fileids('pos')
-        neg_feats = [(self.feature_extractor(
-            nltk.corpus.movie_reviews.words(fileids=[f])), 'neg') for f in neg_ids]
-        pos_feats = [(self.feature_extractor(
-            nltk.corpus.movie_reviews.words(fileids=[f])), 'pos') for f in pos_ids]
+
+        neg_feats = []
+        pos_feats = []
+
+        for database in self.databases:
+            neg_txt_file = open(os.path.abspath('word_database/' + database + '/negative/neg.txt'))
+            pos_txt_file = open(os.path.abspath('word_database/' + database + '/positive/pos.txt'))
+
+            neg_feats.append((self.feature_extractor([line.rstrip('\n') for line in neg_txt_file]), 'neg'))
+            pos_feats.append((self.feature_extractor([line.rstrip('\n') for line in pos_txt_file]), 'pos'))
+
         train_data = neg_feats + pos_feats
+
         self._classifier = nltk.classify.NaiveBayesClassifier.train(train_data)

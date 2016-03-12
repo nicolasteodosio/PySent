@@ -16,7 +16,7 @@ CELERY_IMPORTS = ("fetcher.api",)
 CELERYBEAT_SCHEDULE = {
     'fetch-tweets': {
         'task': 'fetcher.api.search',
-        'schedule': timedelta(seconds=5),
+        'schedule': timedelta(seconds=10),
         'args': [os.environ.get('HASHTAG')],
     },
 }
