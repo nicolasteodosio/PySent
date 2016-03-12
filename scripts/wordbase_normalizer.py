@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+Script para fazer a base de palavras do SentiLex
+no padrão necessáio pelo textblob
+"""
+
+
 import os
 
 
