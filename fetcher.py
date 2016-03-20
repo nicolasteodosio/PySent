@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import celery
 import tweepy
+
 import connections
 from conf import consumer_key, consumer_secret, access_token, access_secret
 
@@ -30,23 +30,4 @@ def get_latest_tweet(q):
             return collection.find({}).sort('id', -1)[0].get('id_str')
         except IndexError:
             return None
-
-
-@celery.task
-def search(q):
-    with connections.get_db_connection() as client:
-        latest = get_latest_tweet(q)
-        tweets = get_tweets(q, latest)
-
-        if tweets:
-            db = client['tweets']
-            collection = db[q]
-
-            result = collection.insert_many(tweets)
-            print '{0} tweets saved!'.format(len(result.inserted_ids))
-        else:
-            print 'new tweets not found'
-
-        return
-
 

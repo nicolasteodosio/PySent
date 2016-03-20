@@ -11,11 +11,11 @@ celery = Celery('EOD_TASKS', broker=BROKER_URL)
 celery.config_from_object('celeryconfig')
 
 CELERY_RESULT_BACKEND = 'redis'
-CELERY_IMPORTS = ("fetcher.api",)
+CELERY_IMPORTS = ("task",)
 
 CELERYBEAT_SCHEDULE = {
     'fetch-tweets': {
-        'task': 'fetcher.api.search',
+        'task': 'task.search',
         'schedule': timedelta(seconds=10),
         'args': [os.environ.get('HASHTAG')],
     },
