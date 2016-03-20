@@ -26,9 +26,14 @@ def search(q):
             for tweet in tweets:
                 sentiment = classifier.classify(tweet['text'], analyzer)
 
-                print 'Tweet: {} || analisys: {}'.format(unidecode(tweet['text']), sentiment)
+                # Creating the 'neutral' classification to measure the accuracy of the model
+                if sentiment.p_pos == .5:
+                    classification = 'neu'
+                else:
+                    classification = sentiment.classification
+
                 tweet['sentiment'] = {
-                    'classification': sentiment.classification,
+                    'classification': classification,
                     'p_pos': sentiment.p_pos,
                     'p_neg': sentiment.p_neg,
                     'databases': DATABASES,
