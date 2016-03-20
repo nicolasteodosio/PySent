@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 import celery
+from datetime import datetime
+from unidecode import unidecode
+from classifier import CustomNaiveBayesAnalyzer, SentimentClassifier
 import connections
 from fetcher import get_latest_tweet, get_tweets
+
+DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
+
+classifier = SentimentClassifier()
+analyzer = CustomNaiveBayesAnalyzer(databases=DATABASES)
 
 
 @celery.task
@@ -10,15 +18,27 @@ def search(q):
         latest = get_latest_tweet(q)
         tweets = get_tweets(q, latest)
 
-        if tweets:
+        if not tweets:
+            print 'There are NO new tweets'
+        else:
+            print '{0} new tweets fetched!'.format(len(tweets))
+
+            for tweet in tweets:
+                sentiment = classifier.classify(tweet['text'], analyzer)
+
+                print 'Tweet: {} || analisys: {}'.format(unidecode(tweet['text']), sentiment)
+                tweet['sentiment'] = {
+                    'classification': sentiment.classification,
+                    'p_pos': sentiment.p_pos,
+                    'p_neg': sentiment.p_neg,
+                    'databases': DATABASES,
+                    'classificated_at': datetime.now()
+                }
+
             db = client['tweets']
             collection = db[q]
 
             result = collection.insert_many(tweets)
-            print '{0} tweets saved!'.format(len(result.inserted_ids))
-        else:
-            print 'new tweets not found'
+            print '{0} tweets classified'.format(len(result.inserted_ids))
 
         return
-
-
