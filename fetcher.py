@@ -31,3 +31,7 @@ def get_latest_tweet(q):
         except IndexError:
             return None
 
+
+def get_latests_tweets(q):
+    latest = get_latest_tweet(q)
+    return get_tweets(q, latest)

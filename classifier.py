@@ -15,19 +15,22 @@ class SentimentClassifier(object):
         Constructs a new SentimentAnalyzer instance.
         """
 
-        collection = os.environ.get('HASHTAG')
-        self.data = self.get_tweets_data(collection)
         self.stopSet = set(stopwords.words('english'))
 
-    def get_tweets_data(self, hashtag):
+    def get_data(self, hashtag):
         with connections.get_db_connection() as client:
             tweets = client['tweets'][hashtag].find({'retweeted': False})
             return tweets
 
-    def classify(self):
-        for tweet in self.data[:100]:
+    def classify_some(self, hashtag):
+        for tweet in self.get_data(hashtag)[:100]:
             blob = TextBlob(tweet['text'], analyzer=CustomNaiveBayesAnalyzer())
             print 'Tweet: {} || analisys: {}'.format(unidecode(tweet['text']), blob.sentiment)
+
+    def classify(self, text, analyzer):
+        blob = TextBlob(text, analyzer=analyzer)
+
+        return blob.sentiment
 
 
 class CustomNaiveBayesAnalyzer(NaiveBayesAnalyzer):
@@ -35,7 +38,7 @@ class CustomNaiveBayesAnalyzer(NaiveBayesAnalyzer):
         """Default feature extractor for the NaiveBayesAnalyzer."""
         return dict(((word, True) for word in words))
 
-    def __init__(self, feature_extractor=_default_feature_extractor, databases=['senti_lex', 'puc_portuguese', 're_li']):
+    def __init__(self, feature_extractor=_default_feature_extractor, databases=['senti_lex']):
         super(NaiveBayesAnalyzer, self).__init__()
         self._classifier = None
         self.feature_extractor = feature_extractor
