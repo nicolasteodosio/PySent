@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from nltk import SnowballStemmer
 from nltk.corpus import stopwords
-
+from unidecode import unidecode
 
 TWITTER_STOPWORDS = [
     '@',
@@ -34,7 +34,9 @@ class TweetNormalizer(object):
         splitted = text.split()
 
         for i, word in enumerate(splitted):
-            stem_word = self.stemmer.stem(word)
+            # import ipdb; ipdb.set_trace()
+            # unicode_word = word.encode('utf-8')
+            stem_word = self.stemmer.stem(unidecode(word))
             splitted[i] = stem_word
 
         return ' '.join(splitted)
