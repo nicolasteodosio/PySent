@@ -10,7 +10,7 @@ from normalizer import TweetNormalizer
 
 DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
 
-COLLECTIONS = ['#mundialdeclubes', '#primeiroassedio']
+COLLECTIONS = ['#Esquenta']
 
 classifier = SentimentClassifier()
 analyzer = CustomNaiveBayesAnalyzer(databases=DATABASES)
@@ -47,6 +47,7 @@ def add_classification_information(tweet):
         classification = 'neu'
     else:
         classification = sentiment.classification
+
     tweet['sentiment'] = {
         'normalized_text': normalized_text,
         'classification': classification,
@@ -55,6 +56,8 @@ def add_classification_information(tweet):
         'databases': DATABASES,
         'classificated_at': datetime.now()
     }
+
+    return tweet
 
 
 def reclassify():
@@ -65,6 +68,6 @@ def reclassify():
             tweets = mongo_collection.find({})
 
             for tweet in tweets:
-                add_classification_information(tweet)
-
-            mongo_collection.insert_many(tweets)
+                tweet_classified = add_classification_information(tweet)
+                mongo_collection.replace_one({'_id': tweet['_id']}, tweet_classified)
+    return
