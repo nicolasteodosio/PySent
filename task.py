@@ -9,9 +9,10 @@ import connections
 from fetcher import get_latests_tweets
 from normalizer import TweetNormalizer
 
-DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
+# DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
+DATABASES = ['senti_lex_stem', 'puc_portuguese_stem', 're_li_stem', 'oscars_stem']
 
-COLLECTIONS = ['#Esquenta']
+COLLECTIONS = ['#Oscars2016']
 
 classifier = SentimentClassifier()
 analyzer = CustomNaiveBayesAnalyzer(databases=DATABASES)

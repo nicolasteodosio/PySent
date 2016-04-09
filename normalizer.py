@@ -34,8 +34,6 @@ class TweetNormalizer(object):
         splitted = text.split()
 
         for i, word in enumerate(splitted):
-            # import ipdb; ipdb.set_trace()
-            # unicode_word = word.encode('utf-8')
             stem_word = self.stemmer.stem(unidecode(word))
             splitted[i] = stem_word
 
