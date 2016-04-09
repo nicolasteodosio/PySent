@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from datetime import datetime
 
 import celery
@@ -61,6 +62,7 @@ def add_classification_information(tweet):
 
 
 def reclassify():
+    start_time = time.time()
     for collection in COLLECTIONS:
 
         with connections.get_db_connection() as client:
@@ -70,4 +72,7 @@ def reclassify():
             for tweet in tweets:
                 tweet_classified = add_classification_information(tweet)
                 mongo_collection.replace_one({'_id': tweet['_id']}, tweet_classified)
+    elapsed_time = time.time() - start_time
+
+    print 'Time elapsed: {} seconds'.format(elapsed_time)
     return
