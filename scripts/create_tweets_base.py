@@ -10,8 +10,8 @@ def create_tweets_base(q='#OscarNaSKY'):
             print tweet.get('text')
             polarity = input('Positivo:1, Negativo:0, Irrelevante:3 \n')
             if polarity == 1:
-                client['tweets']['pos'].insert(tweet)
+                client['tweets']['pos'].insert_one(tweet)
             elif polarity == 0:
-                client['tweets']['neg'].insert(tweet)
+                client['tweets']['neg'].insert_one(tweet)
             else:
                 continue
