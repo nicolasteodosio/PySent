@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 import connections
 
 
-def create_tweets_base(q='#OscarNaSKY'):
+def create_tweets_base():
     with connections.get_db_connection() as client:
-        collection = client['tweets'][q]
+        collection = client['tweets'][os.environ.get('COLLECTION')]
         tweets = collection.find({})
         for tweet in tweets:
             print tweet.get('text')
