@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
+from dateutil import parser
 
 import celery
 
@@ -11,7 +12,7 @@ from normalizer import TweetNormalizer
 
 DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
 
-COLLECTIONS = ['#Esquenta']
+COLLECTIONS = ['#Oscars2016']
 
 classifier = SentimentClassifier()
 analyzer = CustomNaiveBayesAnalyzer(databases=DATABASES)
@@ -61,7 +62,7 @@ def add_classification_information(tweet):
     return tweet
 
 
-def reclassify():
+def reclassify(classify=True, add_time=True):
     start_time = time.time()
     for collection in COLLECTIONS:
 
@@ -70,9 +71,23 @@ def reclassify():
             tweets = mongo_collection.find({})
 
             for tweet in tweets:
-                tweet_classified = add_classification_information(tweet)
+                tweet_classified = tweet
+
+                if classify:
+                    tweet_classified = add_classification_information(tweet)
+                if add_time:
+                    tweet_classified = add_date_fields(tweet)
+
                 mongo_collection.replace_one({'_id': tweet['_id']}, tweet_classified)
     elapsed_time = time.time() - start_time
 
     print 'Time elapsed: {} seconds'.format(elapsed_time)
     return
+
+
+def add_date_fields(tweet):
+    created_at_datetime = parser.parse(tweet['created_at'])
+    tweet['created_at_datetime'] = created_at_datetime
+    tweet['created_at_timestamp'] = time.mktime(created_at_datetime.timetuple())
+
+    return tweet
