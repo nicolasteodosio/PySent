@@ -2,7 +2,7 @@
 
 import datetime
 
-OSCAR_TIMELINE = {
+OSCAR_TIMELINE = [
     {'date': datetime.datetime(year=2016, month=2, day=28, hour=22, minute=44),
      'event': u'Começo do evento'
      },
@@ -92,8 +92,5 @@ OSCAR_TIMELINE = {
      },
     {'date': datetime.datetime(year=2016, month=2, day=29, hour=02, minute=00, ),
      'event': u'Melhor filme: Vencedor Spotlight'
-     },
-
-
-
-}
+     }
+]

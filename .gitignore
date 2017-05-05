@@ -64,3 +64,8 @@ docs/_build/
 
 # PyBuilder
 target/
+/dump/
+/teste/
+/word_database/
+/count.json
+/count2.json

@@ -17,6 +17,7 @@ class TweetNormalizer(object):
 
     def clean_stopwords(self, text):
         # Cleaning portuguese stopwords
+        text = unidecode(text)
         splitted = [i for i in text.split() if i not in stopwords.words(self.language)]
         cleaned_splitted = []
 
@@ -34,8 +35,6 @@ class TweetNormalizer(object):
         splitted = text.split()
 
         for i, word in enumerate(splitted):
-            # import ipdb; ipdb.set_trace()
-            # unicode_word = word.encode('utf-8')
             stem_word = self.stemmer.stem(unidecode(word))
             splitted[i] = stem_word
 
@@ -43,6 +42,6 @@ class TweetNormalizer(object):
 
     def normalize(self, text):
         text = self.clean_stopwords(text)
-        text = self.stem(text)
+        # text = self.stem(text)
 
         return text

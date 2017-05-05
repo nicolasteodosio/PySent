@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 
 import celery
+from dateutil.tz import gettz, tzlocal
 
 from classifier import CustomNaiveBayesAnalyzer, SentimentClassifier
 import connections
@@ -12,7 +13,7 @@ from normalizer import TweetNormalizer
 
 DATABASES = ['senti_lex', 'puc_portuguese', 're_li']
 
-COLLECTIONS = ['#Oscars2016']
+COLLECTIONS = ['#Oscar']
 
 classifier = SentimentClassifier()
 analyzer = CustomNaiveBayesAnalyzer(databases=DATABASES)
@@ -62,7 +63,7 @@ def add_classification_information(tweet):
     return tweet
 
 
-def reclassify(classify=True, add_time=True):
+def reclassify(classify=False, add_time=True):
     start_time = time.time()
     for collection in COLLECTIONS:
 
@@ -87,7 +88,7 @@ def reclassify(classify=True, add_time=True):
 
 def add_date_fields(tweet):
     created_at_datetime = parser.parse(tweet['created_at'])
-    tweet['created_at_datetime'] = created_at_datetime
+    tweet['created_at_datetime'] = created_at_datetime - timedelta(hours=3)
     tweet['created_at_timestamp'] = time.mktime(created_at_datetime.timetuple())
 
     return tweet
